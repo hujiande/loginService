@@ -35,7 +35,6 @@ public class JedisUtils {
 	@Resource(name = "redisTemplate")
 	private SetOperations<String, String> valOpsSet;
 
-
 	@Resource(name = "redisTemplate")
 	private ZSetOperations<String, String> valOpsZSet;
 
