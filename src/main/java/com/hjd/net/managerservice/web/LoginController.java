@@ -50,18 +50,6 @@ public class LoginController {
     }
 
     /**
-     * 登出
-     *
-     * @param user
-     * @return
-     */
-    @ResponseBody
-    @GetMapping(value = "/loginOut")
-    public Result loginOut(HttpServletResponse response, @RequestBody UserVo user) {
-        return userService.login(user, response);
-    }
-
-    /**
      * 获取登录用户基础信息
      *
      * @return
