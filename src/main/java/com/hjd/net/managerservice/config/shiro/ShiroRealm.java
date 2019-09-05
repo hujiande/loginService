@@ -60,7 +60,7 @@ public class ShiroRealm extends AuthorizingRealm {
     {
 		String token = (String)auth.getPrincipal();
         String account  = JwtUtil.getClaim(token, SecurityConsts.ACCOUNT);
-        logger.info("==========>用户 {} 验证权限<==========", account);
+        logger.info("==========>用户 {} 调用doGetAuthenticationInfo方法验证权限<==========", account);
 
 		if (account == null)
 		{
@@ -89,25 +89,24 @@ public class ShiroRealm extends AuthorizingRealm {
 	 * @return
 	 */
 	@Override
-	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-//		logger.info("调用doGetAuthorizationInfo方法获取权限");
-
-		SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-
-		String account = JwtUtil.getClaim(principals.toString(), SecurityConsts.ACCOUNT);
-		User UserInfo = userService.findUserByAccount(account);
-
-		//获取role
+	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
+    {
+        String account = JwtUtil.getClaim(principals.toString(), SecurityConsts.ACCOUNT);
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        User UserInfo = userService.findUserByAccount(account);
+        logger.info("==========>用户 {} 调用doGetAuthorizationInfo方法获取权限<==========", account);
+        //获取role
 		List<Role> RoleList = roleService.findRoleByUserId(UserInfo.getId());
 		//获取权限
 		List<Object> AuthorityList = authorityService.findByUserId(UserInfo.getId());
-		for(Role Role : RoleList){
+		for(Role Role : RoleList)
+		{
 			authorizationInfo.addRole(Role.getName());
-			for(Object auth: AuthorityList){
+			for(Object auth: AuthorityList)
+			{
 				authorizationInfo.addStringPermission(auth.toString());
 			}
 		}
 		return authorizationInfo;
 	}
-
 }
