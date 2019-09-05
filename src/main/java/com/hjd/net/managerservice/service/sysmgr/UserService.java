@@ -34,12 +34,6 @@ public interface UserService extends IService<User> {
     Result login(UserVo user, HttpServletResponse response);
 
     /**
-     * ERP登录
-     * @return
-     */
-    Result loginErp(HttpServletResponse response);
-
-    /**
      * 保存用户
      * @param user
      * @return

@@ -9,6 +9,7 @@ import com.hjd.net.managerservice.entity.sysmgr.User;
 import com.hjd.net.managerservice.service.sysmgr.AuthorityService;
 import com.hjd.net.managerservice.service.sysmgr.RoleService;
 import com.hjd.net.managerservice.service.sysmgr.UserService;
+import com.hjd.net.managerservice.utils.JedisUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -34,6 +36,9 @@ public class ShiroRealm extends AuthorizingRealm {
 
 	@Autowired
 	private RoleService roleService;
+
+	@Autowired
+	private JedisUtils jedisUtils;
 
 	@Autowired
 	private AuthorityService authorityService;
@@ -51,19 +56,32 @@ public class ShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth)
-	        throws AuthenticationException {
+	        throws AuthenticationException
+    {
 		String token = (String)auth.getPrincipal();
-		String account  = JwtUtil.getClaim(token, SecurityConsts.ACCOUNT);
+        String account  = JwtUtil.getClaim(token, SecurityConsts.ACCOUNT);
+        logger.info("==========>用户 {} 验证权限<==========", account);
 
-		if (account == null) {
+		if (account == null)
+		{
 			throw new AuthenticationException("token invalid");
 		}
-		if (JwtUtil.verify(token)) {
-			return new SimpleAuthenticationInfo(token, token, "shiroRealm");
+		if (JwtUtil.verify(token))
+		{
+            //验证是否失效
+            String key = SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
+            String rToken = jedisUtils.get(key);
+            if(StringUtils.isEmpty(rToken))
+            {
+                throw new AuthenticationException("Token expired or incorrect.");
+            }
+            if (!rToken.equals(token))
+            {
+                throw new AuthenticationException("Access denied, Token verity error.");
+            }
 		}
-		//验证是否失效
-		throw new AuthenticationException("Token expired or incorrect.");
-	}
+        return new SimpleAuthenticationInfo(token, token, "shiroRealm");
+    }
 
 	/**
 	 * 只有当需要检测用户权限的时候才会调用此方法，例如checkRole,checkPermission之类的

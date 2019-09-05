@@ -52,19 +52,6 @@ public class LoginController {
     }
 
     /**
-     * erp登录验证ticket，生成本地token，由本地来管理token生命周期
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/valid_erp", method = {RequestMethod.POST, RequestMethod.GET})
-    public Result loginErp(HttpServletResponse response) {
-//        response.setHeader("Access-Control-Allow-Origin", domain);
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        return userService.loginErp(response);
-    }
-
-    /**
      * 获取登录用户基础信息
      *
      * @return

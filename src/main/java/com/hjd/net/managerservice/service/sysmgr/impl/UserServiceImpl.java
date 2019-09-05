@@ -109,25 +109,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return new Result(true, "登录成功", null, Constants.TOKEN_CHECK_SUCCESS);
     }
 
-    /**
-     * ERP登录
-     * @return
-     */
-    @Override
-    public Result loginErp(HttpServletResponse response) {
-
-        //@Todo 待开发
-//        User userBean = this.findUserByAccount("admin");
-//        if (userBean == null || "0".equals(userBean.getErpFlag())) {
-//            //ERP账号不在系统中，或者系统中标志是非ERP账号
-//            return new Result(false, "用户未授权", null, Constants.PASSWORD_CHECK_INVALID);
-//        }
-//        //账号是否锁定
-//        if ("0".equals(userBean.getStatus())) {
-//            return new Result(false, "该账号已被锁定", null, Constants.PASSWORD_CHECK_INVALID);
-//        }
-        return new Result(true, "登录成功", null, Constants.TOKEN_CHECK_SUCCESS);
-    }
 
     /**
      * 登录后更新缓存，生成token，设置响应头部信息
@@ -144,9 +125,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String token = JwtUtil.sign(account, currentTimeMillis);
         json.put("token", token);
 
-        //更新RefreshToken缓存的时间戳
+        //token缓存至redis
         String refreshTokenKey= SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
-        jedisUtils.saveString(refreshTokenKey, currentTimeMillis, jwtProperties.getTokenExpireTime());
+        jedisUtils.saveString(refreshTokenKey, token, jwtProperties.getTokenExpireTime());
 
         //记录登录日志
         LoginLog loginLog= new LoginLog();
