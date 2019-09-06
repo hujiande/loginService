@@ -80,7 +80,7 @@ public class ShiroRealm extends AuthorizingRealm {
                 throw new AuthenticationException("Access denied, Token verity error.");
             }
 		}
-        throw new AuthenticationException("Token expired or incorrect.");
+        return new SimpleAuthenticationInfo(token, token, "shiroRealm");
     }
 
 	/**
