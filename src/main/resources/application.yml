@@ -30,51 +30,51 @@ logging:
   path: /home/appusr/log
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
-  #ÊµÌåÉ¨Ãè£¬¶à¸öpackageÓÃ¶ººÅ»òÕß·ÖºÅ·Ö¸ô
+  #å®ä½“æ‰«æï¼Œå¤šä¸ªpackageç”¨é€—å·æˆ–è€…åˆ†å·åˆ†éš”
   typeAliasesPackage: com.hjd.net.managerservice.entity
   global-config:
     db-config:
       id-type: auto
-    #Ö÷¼üÀàĞÍ  0:"Êı¾İ¿âID×ÔÔö", 1:"ÓÃ»§ÊäÈëID",2:"È«¾ÖÎ¨Ò»ID (Êı×ÖÀàĞÍÎ¨Ò»ID)", 3:"È«¾ÖÎ¨Ò»ID UUID";
+    #ä¸»é”®ç±»å‹  0:"æ•°æ®åº“IDè‡ªå¢", 1:"ç”¨æˆ·è¾“å…¥ID",2:"å…¨å±€å”¯ä¸€ID (æ•°å­—ç±»å‹å”¯ä¸€ID)", 3:"å…¨å±€å”¯ä¸€ID UUID";
     id-type: 0
-    #×Ö¶Î²ßÂÔ 0:"ºöÂÔÅĞ¶Ï",1:"·Ç NULL ÅĞ¶Ï"),2:"·Ç¿ÕÅĞ¶Ï"
+    #å­—æ®µç­–ç•¥ 0:"å¿½ç•¥åˆ¤æ–­",1:"é NULL åˆ¤æ–­"),2:"éç©ºåˆ¤æ–­"
     field-strategy: 2
-    #ÍÕ·åÏÂ»®Ïß×ª»»
+    #é©¼å³°ä¸‹åˆ’çº¿è½¬æ¢
     db-column-underline: true
-    #Ë¢ĞÂmapper µ÷ÊÔÉñÆ÷
+    #åˆ·æ–°mapper è°ƒè¯•ç¥å™¨
     refresh-mapper: true
-    #Êı¾İ¿â´óĞ´ÏÂ»®Ïß×ª»»
+    #æ•°æ®åº“å¤§å†™ä¸‹åˆ’çº¿è½¬æ¢
     #capital-mode: true
-    #Âß¼­É¾³ıÅäÖÃ£¨ÏÂÃæ3¸öÅäÖÃ£©
+    #é€»è¾‘åˆ é™¤é…ç½®ï¼ˆä¸‹é¢3ä¸ªé…ç½®ï¼‰
     #    logic-delete-value: 0
     #    logic-not-delete-value: 1
-    #×Ô¶¨ÒåSQL×¢ÈëÆ÷
+    #è‡ªå®šä¹‰SQLæ³¨å…¥å™¨
     #sql-injector: com.baomidou.springboot.xxx
     logic-delete-value: 1
     logic-not-delete-value: 0
     #    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
-    # SQL ½âÎö»º´æ£¬¿ªÆôºó¶à×â»§ @SqlParser ×¢½âÉúĞ§
+    # SQL è§£æç¼“å­˜ï¼Œå¼€å¯åå¤šç§Ÿæˆ· @SqlParser æ³¨è§£ç”Ÿæ•ˆ
     #sql-parser-cache: true
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
 token:
-  #  tokenÓĞĞ§Ê±¼ä£¬µ¥Î»·ÖÖÓ 24*60=1440
+  #  tokenæœ‰æ•ˆæ—¶é—´ï¼Œå•ä½åˆ†é’Ÿ 24*60=1440
   tokenExpireTime: 1800
-  # ¸üĞÂÁîÅÆÊ±¼ä 2*60=120
+  # æ›´æ–°ä»¤ç‰Œæ—¶é—´ 2*60=120
   refreshCheckTime: 120
-  #  #  RefreshToken¹ıÆÚÊ±¼ä£¬µ¥Î»£º·ÖÖÓ, 24*60=1440
+  #  #  RefreshTokenè¿‡æœŸæ—¶é—´ï¼Œå•ä½ï¼šåˆ†é’Ÿ, 24*60=1440
   #  refreshTokenExpireTime: 1440
-  #  shiro»º´æÓĞĞ§ÆÚ£¬µ¥Î»·ÖÖÓ,2*60=120
+  #  shiroç¼“å­˜æœ‰æ•ˆæœŸï¼Œå•ä½åˆ†é’Ÿ,2*60=120
   shiroCacheExpireTime: 120
-  #  token¼ÓÃÜÃÜÔ¿
+  #  tokenåŠ å¯†å¯†é’¥
   secretKey: bVa7Zr6THLshZIiH
 
 permission-config:
   perms:
-  - key: /user/login
-    value: anon
-  - key: /logout
-    value: logout
-  - key: /**
-    value: jwt
+    - key: /user/login
+      value: anon
+    - key: /logout
+      value: logout
+    - key: /**
+      value: jwt

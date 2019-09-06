@@ -57,7 +57,7 @@ public class ShiroRealm extends AuthorizingRealm {
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth)
 	        throws AuthenticationException
-    {
+    {	//获取当前用户的token
 		String token = (String)auth.getPrincipal();
         String account  = JwtUtil.getClaim(token, SecurityConsts.ACCOUNT);
         logger.info("==========>用户 {} 调用doGetAuthenticationInfo方法验证权限<==========", account);
@@ -68,15 +68,17 @@ public class ShiroRealm extends AuthorizingRealm {
 		}
 		if (JwtUtil.verify(token))
 		{
-            //验证是否失效
+            //验证是否失效 从redis获取token
             String key = SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
             String rToken = jedisUtils.get(key);
             if(StringUtils.isEmpty(rToken))
             {
+				//如果没有  则 token实效  需要重新登陆
                 throw new AuthenticationException("Token expired or incorrect.");
             }
             if (!rToken.equals(token))
             {
+				//验证redis中的 token 和当前token是否一致  不一致则视为非法访问  需要重新登陆
                 throw new AuthenticationException("Access denied, Token verity error.");
             }
 		}

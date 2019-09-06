@@ -74,25 +74,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public Result login(UserVo user, HttpServletResponse response) {
-
+        //校验参数是否完整
         Assert.notNull(user.getUsername(), "用户名不能为空");
         Assert.notNull(user.getPassword(), "密码不能为空");
-
+        //根据用户名 查询用户信息
         User userBean = this.findUserByAccount(user.getUsername());
         if (userBean == null) {
             return new Result(false, "用户不存在", null, Constants.PASSWORD_CHECK_INVALID);
         }
+        //密码是加密的 输入密码需要先加密
         String encodePassword = ShiroKit.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
+        //加密后的密码和查询密码对比  是否一致
         if (!encodePassword.equals(userBean.getPassword())) {
+            //账户密码不一致 返回信息  用户名或密码错误
             return new Result(false, "用户名或密码错误", null, Constants.PASSWORD_CHECK_INVALID);
         }
         //账号是否锁定
         if ("0".equals(userBean.getStatus())) {
             return new Result(false, "该账号已被锁定", null, Constants.PASSWORD_CHECK_INVALID);
         }
+        //登陆成功 记录登路日志 生成token  token保存redis
         String strToken = this.loginSuccess(userBean.getAccount(), response);
+        //获取shiro 的Subject
         Subject subject = SecurityUtils.getSubject();
+        //转换为 AuthenticationToken 队形
         AuthenticationToken token = new JwtToken(strToken);
+        //shiro登陆入口  （不用管）
         subject.login(token);
         //登录成功
         return new Result(true, "登录成功", null, Constants.TOKEN_CHECK_SUCCESS);
@@ -112,8 +119,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         JSONObject json = new JSONObject();
         String token = JwtUtil.sign(account, currentTimeMillis);
         json.put("token", token);
-        //token缓存至redis
+        //token缓存至redis     story-admin:refresh_token: + 账户名称
         String refreshTokenKey = SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
+        //保存至redis refreshTokenKey=key token=value jwtProperties.getTokenExpireTime()=实效时间
         jedisUtils.saveString(refreshTokenKey, token, jwtProperties.getTokenExpireTime());
         //记录登录日志
         LoginLog loginLog = new LoginLog();
@@ -125,7 +133,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         loginLog.setEditor(account);
         loginLog.setCreatedTime(loginLog.getLoginTime());
         loginLogService.save(loginLog);
-        //写入header
+        //将 token 写入header  返回给前端
         response.setHeader(SecurityConsts.REQUEST_AUTH_HEADER, token);
         response.setHeader("Access-Control-Expose-Headers", SecurityConsts.REQUEST_AUTH_HEADER);
         return token;
